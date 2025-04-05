@@ -1,0 +1,6 @@
+env/*
+.env
+
+data/*.csv
+data/export/*.csv
+data/cleaned/*.csv
