@@ -13,7 +13,18 @@ def get_raw_export():
     engine = create_engine(getenv("DATABASE_URI"))
 
     prepared_statement = """
-    SELECT id, chatbot_id, data, extra_data, created_at, updated_at FROM conversation WHERE assistant_id = :CHATBOT_ID
+    SELECT 
+        ac.id, 
+        ac.assistant_id, 
+        ac.data, 
+        ac.extra_data, 
+        ac.created_at 
+    FROM 
+        public.assistants_conversation ac
+    WHERE 
+        assistant_id = :CHATBOT_ID
+    ORDER BY
+        created_at DESC;
     """
 
     with engine.connect() as conn:
@@ -22,14 +33,16 @@ def get_raw_export():
         data = []
 
         for row in rows:
-            data.append({
-                "id": row.id,
-                "chatbot_id": row.chatbot_id,
-                "data": dumps(row.data),
-                "extra_data": dumps(row.extra_data),
-                "created_at": row.created_at,
-                "updated_at": row.updated_at
-            })
+            data.append(
+                {
+                    "id": row.id,
+                    "chatbot_id": row.chatbot_id,
+                    "data": dumps(row.data),
+                    "extra_data": dumps(row.extra_data),
+                    "created_at": row.created_at,
+                    "updated_at": row.updated_at
+                }
+            )
         df = pd.DataFrame(data)
         df.to_csv(FILE_PATH, index=False)
         print(f"Exported {len(data)} records to {FILE_PATH}")
