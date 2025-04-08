@@ -17,35 +17,20 @@ This internal tool can be used by developers and customer success representative
    1. On windows, the command is `source env/Scripts/activate`.
    2. __DO NOT PROCEED FURTHER WITHOUT ACTIVATING THE VIRTUAL ENVIRONMENT!!!__
 4. Run the install script via the `sh scripts/install.sh` command.
+5. Add a `.env` file with the required values to the root of the directory.
 
 ## Usage
 
-1. Contact an administrator to query the database via SQL directly and present the conversations for the given date-time range.
-   1. You need to provide them with the following.
-      1. The `ID` of the chatbot.
-      2. The Datetime range for the conversations.
-   2. The raw SQL query is
+1. Activate the python virtual environment created during setup via the command `source env/bin/activate`.
+   1. On windows, the command is `source env/Scripts/activate`.
+2. Edit the `CHATBOT_ID` in `main.py` to the `ID` of the Assistant (not the `UUID` or the `short_code`).
+3. Edit the `DATE_RANGE_START` and `DATE_RANGE_END` values in `main.py` in the formats `"YYYY-MM-DD 00:00:00"` and `"YYYY-MM-DD 23:59:59"`, __respectively__.
+4. Run the command `python main.py`.
+5. Repeat for all values for `CHATBOT_ID`.
+6. The exported conversations will be in `data/exports` in the format `<chatbot_id>_export.csv`.
 
-        ```sql
-        select 
-            ac.id,
-            ac.raw_data,
-            ac.data,
-            ac.extra_data
-        from 
-            public.assistants_conversation ac 
-        where 
-            ac.assistant_id = <chatbotId> 
-        and 
-            ac.is_completed = true
-        and 
-            ac.created_at >= <startingDatetimeStr> and ac.created_at <= <endingDatetimeStr>;
-        ```
+## .ENV File Format
 
-   3. The `data` and `raw_data` columns are __MANDATORY__.
-2. The administrator then needs to export the conversation query result as a __CSV__ only with the naming scheme of "\<chatbotId\>-convo.csv".
-3. Copy the CSV file to the root of the `data` directory in the repository.
-   1. You can have multiple export CSVs saved to the `data` directory.
-4. Edit the `CHATBOT_ID` declared at the top of the `main.py` file to be the chatbot ID for the use-case.
-5. Run `python main.py`
-6. The exported conversation CSV should be in `data/cleaned` with the naming scheme "\<chatbotId\>_cleaned_convo.csv".
+```env
+DATABASE_URI = "path/to/the/database"
+```
