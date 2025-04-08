@@ -4,11 +4,13 @@ from json import loads, dumps
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import argparse
+import re
 
 CHATBOT_ID = 2848
 DATE_RANGE_START = "2025-03-06 00:00:00"
 DATE_RANGE_END = "2025-04-07 23:59:59"
 FILE_PATH = f"data{sep}{CHATBOT_ID}-convo.csv"
+URL_REGEX = re.compile(r'^(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,}){1,2}\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,}){1,2})|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?')
 load_dotenv()
 
 def get_raw_export():
@@ -76,9 +78,15 @@ def export_conversation():
             "id": row.id
         }
         for key in data_001:
-            full_data[key] = data_001.get(key, "")
+            answer = data_001.get(key)
+            if answer and isinstance(answer, str) and re.match(URL_REGEX, answer):
+                continue
+            full_data[key] = answer
         for key in data_002:
-            full_data[key] = data_001.get(key, "")
+            answer = data_002.get(key)
+            if answer and isinstance(answer, str) and re.match(URL_REGEX, answer):
+                continue
+            full_data[key] = answer
         convo_json.append(full_data)
     df = pd.DataFrame(convo_json)
     df.to_csv(f"data{sep}export{sep}{CHATBOT_ID}_export.csv")
