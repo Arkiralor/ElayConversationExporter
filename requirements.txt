@@ -206,6 +206,8 @@ prompt-toolkit==3.0.50
     #   jupyter-console
 psutil==7.0.0
     # via ipykernel
+psycopg2-binary==2.9.10
+    # via -r requirements.in
 pure-eval==0.2.3
     # via stack-data
 pycparser==2.22

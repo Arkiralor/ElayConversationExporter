@@ -1,4 +1,5 @@
 jupyter
 pandas
 python-dotenv
+psycopg2-binary
 SQLAlchemy

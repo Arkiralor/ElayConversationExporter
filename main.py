@@ -1,11 +1,13 @@
 import pandas as pd
 from os import sep, getenv
 from json import loads, dumps
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import argparse
 
 CHATBOT_ID = 2848
+DATE_RANGE_START = "2025-03-06 00:00:00"
+DATE_RANGE_END = "2025-04-07 23:59:59"
 FILE_PATH = f"data{sep}{CHATBOT_ID}-convo.csv"
 load_dotenv()
 
@@ -16,31 +18,39 @@ def get_raw_export():
     SELECT 
         ac.id, 
         ac.assistant_id, 
+        ac.raw_data,
         ac.data, 
         ac.extra_data, 
         ac.created_at 
     FROM 
         public.assistants_conversation ac
     WHERE 
-        assistant_id = :CHATBOT_ID
+        ac.assistant_id = :CHATBOT_ID
+    AND
+        ac.is_completed = TRUE
+    AND
+        ac.created_at >= :DATE_RANGE_START
+    AND
+        ac.created_at <= :DATE_RANGE_END
     ORDER BY
         created_at DESC;
     """
 
     with engine.connect() as conn:
-        result = conn.execute(prepared_statement, {"CHATBOT_ID": CHATBOT_ID})
+        result = conn.execute(text(prepared_statement), {"CHATBOT_ID": CHATBOT_ID, "DATE_RANGE_START": DATE_RANGE_START, "DATE_RANGE_END": DATE_RANGE_END})
         rows = result.fetchall()
         data = []
 
         for row in rows:
+            # print(row)
             data.append(
                 {
                     "id": row.id,
-                    "chatbot_id": row.chatbot_id,
+                    "assistant_id": row.assistant_id,
+                    "raw_data": dumps(row.raw_data),
                     "data": dumps(row.data),
                     "extra_data": dumps(row.extra_data),
-                    "created_at": row.created_at,
-                    "updated_at": row.updated_at
+                    "created_at": row.created_at
                 }
             )
         df = pd.DataFrame(data)
