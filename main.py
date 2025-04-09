@@ -89,7 +89,7 @@ def export_conversation():
             full_data[key] = answer
         convo_json.append(full_data)
     df = pd.DataFrame(convo_json)
-    df.to_csv(f"data{sep}export{sep}{CHATBOT_ID}_export.csv")
+    df.to_csv(f"data{sep}export{sep}{CHATBOT_ID}_export_{DATE_RANGE_START}_to_{DATE_RANGE_END}.csv")
 
 def run():
     get_raw_export()
