@@ -24,7 +24,7 @@ This internal tool can be used by developers and customer success representative
 1. Activate the python virtual environment created during setup via the command `source env/bin/activate`.
    1. On windows, the command is `source env/Scripts/activate`.
 2. Run the command `python main.py --chatbot_id comeChatbotId --start_date yyyy-mm-dd 00:00:00 --end_date yyyy-mm-dd 23:59:59 --debug false`.
-   1. `start_date` and `end_date` values in `main.py` should be in the formats `"YYYY-MM-DD 00:00:00"` and `"YYYY-MM-DD 23:59:59"`, __respectively__.
+   1. `start_date` and `end_date` values should be in the formats `"YYYY-MM-DD 00:00:00"` and `"YYYY-MM-DD 23:59:59"`, __respectively__.
    2. If these values aren't provided, then the default values defined in `main.py` will be used.
    3. If `debug` is set to True, all lines from the exported conversation will be printed on screen.
 3. Repeat for all values for `CHATBOT_ID`.
